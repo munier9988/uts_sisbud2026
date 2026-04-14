@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+# database
+  mysql_db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: uts_sisbud
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3308:3306"
+
+# backend 1
+  app1:
+    build: .
+    volumes:
+      - .:/app
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    depends_on:
+      - mysql_db
+
+# backend 2
+  app2:
+    build: .
+    volumes:
+      - .:/app
+    command: php artisan serve --host=0.0.0.0 --port=8001
+    depends_on:
+      - mysql_db
+
+#backend 3
+  app3:
+    build: .
+    volumes:
+      - .:/app
+    command: php artisan serve --host=0.0.0.0 --port=8002
+    depends_on:
+      - mysql_db
+
+#backend 4
+  app4:
+    build: .
+    volumes:
+      - .:/app
+    command: php artisan serve --host=0.0.0.0 --port=8003
+    depends_on:
+      - mysql_db
+
+  #backend 5
+  app5:
+    build: .
+    volumes:
+      - .:/app
+    command: php artisan serve --host=0.0.0.0 --port=8004
+    depends_on:
+      - mysql_db
+
+#Load balancer
+  nginx_lb:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app1
+      - app2
+      - app3
+      - app4
+      - app5
